@@ -1,0 +1,50 @@
+//
+//  {{ module_info.name }}{{ module_info.file_name }}
+//  {{ module_info.project_name }}
+//
+//  Created by {{ developer.name }} on {{ date }}.
+//  Copyright © {{ year }} {{ developer.company }}. All rights reserved.
+//
+
+import Foundation
+
+final class {{ module_info.name }}Configurator: NSObject  {
+
+    // MARK: - Module model
+    struct Model {
+
+    }
+
+
+    // MARK: - Module init WITH parameters
+    static func instantiateModuleTransitionHandler(with: Model) -> ModuleTransitionHandler {
+        
+        let view = {{ module_info.name }}ViewController()
+        let dataProvider = {{ module_info.name }}DataProviderImp()
+        let presenter = {{ module_info.name }}Presenter(dataProvider: dataProvider)
+        let interactor = {{ module_info.name }}Interactor(service: ??)
+        let router = {{ module_info.name }}Router()
+        
+        interactor.presenter = presenter
+        
+        presenter.interactor = interactor
+        presenter.router = router
+        presenter.view = view
+        
+        view.presenter = presenter
+        router.presenter = presenter
+        router.transition = view
+        
+        return view
+    }
+
+
+    // MARK: - Module init WITHOUT parameters
+    func instantiateModuleTransitionHandler() -> ModuleTransitionHandler {
+        
+        let model = Model()
+        return instantiateModuleTransitionHandler(with: model)
+    }
+
+}
+

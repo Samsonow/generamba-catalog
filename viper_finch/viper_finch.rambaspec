@@ -1,0 +1,17 @@
+# Template information section
+name: "viper_finch"
+summary: "Swift VIPER module template"
+author: "Samsonov"
+version: "1.0.0"
+license: "MIT"
+
+# The declarations for code files
+
+code_files:
+
+- {name: Configurator.swift, path: Code/Configurator.swift.liquid}
+- {name: DataProvider.swift, path: Code/DataProvider.swift.liquid}
+- {name: Router.swift, path: Code/Router.swift.liquid}
+- {name: Interactor.swift, path: Code/Interactor.swift.liquid}
+- {name: Presenter.swift, path: Code/Presenter.swift.liquid}
+- {name: View.swift, path: Code/View.swift.liquid}

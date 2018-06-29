@@ -1,0 +1,133 @@
+//
+//  {{ module_info.name }}{{ module_info.file_name }}
+//  {{ module_info.project_name }}
+//
+//  Created by {{ developer.name }} on {{ date }}.
+//  Copyright © {{ year }} {{ developer.company }}. All rights reserved.
+//
+
+import Foundation
+import UIKit
+
+// MARK: - View protocol
+protocol {{ module_info.name }}ViewInput: ContentLoadable, InfoViewable {
+    
+    func setup(with model: VIEWMODELNAME)
+}
+
+final class {{ module_info.name }}ViewController: UIViewController {
+
+    // MARK: - public propertie
+    var presenter: {{ module_info.name }}ViewOutput?
+
+    // MARK: - private propertie
+    private var viewModel: {{ module_info.name }}ViewModel?
+    private var tableView: UITableView!
+    private(set) var activityIndicator: LoadingIndicator?
+
+
+    // MARK: - Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        configureInterface()
+        configureLoadingIndicator()
+
+        presenter?.viewIsReady()
+    }
+
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(orientationDidChange), name: Notification.Name.UIDeviceOrientationDidChange, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name.UIDeviceOrientationDidChange, object: nil)
+    }
+    
+    @objc private func orientationDidChange() {
+        presenter?.viewDidChangeOrientation(to: UIDevice.current.orientation)
+    }
+
+
+    // MARK: - Drawing
+    private func configureInterface() {
+
+        tableView = UITableView()
+        tableView.layer.masksToBounds = true
+        tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = ??
+        let cells = ??
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(cellTypes: cells)
+        view.addSubview(tableView)
+        tableView.autoPinEdgesToSuperviewEdges()
+    }
+
+
+    // MARK: - Configuration
+    private func configureLoadingIndicator() {
+        
+        activityIndicator = ??
+    }
+
+}
+
+
+// MARK: - {{module_info.name}}ViewInput
+extension {{ module_info.name }}ViewController: {{module_info.name}}ViewInput {
+
+    func setup(with viewModel: {{ module_info.name }}ViewModel) {
+        self.viewModel = viewModel
+        tableView.reloadData()
+    }
+
+}
+
+
+// MARK: - UITableViewDelegate
+extension {{ module_info.name }}ViewController: UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel?.rows.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard let row = viewModel?.rows[safe: indexPath.row] else { return UITableViewCell() }
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: row.type.identifier, for: indexPath)
+        (cell as? Setupable)?.setup(row.type.setupObject)
+        (cell as? Delegatable)?.delegate = self
+        
+        return cell
+    }
+    
+}
+
+
+// MARK: - UITableViewDelegate
+extension {{ module_info.name }}ViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return cellHeight(for: indexPath)
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return cellHeight(for: indexPath)
+    }
+    
+    private func cellHeight(for indexPath: IndexPath) -> CGFloat {
+        return viewModel?.rows[safe: indexPath.row]?.height ?? 0
+    }
+    
+}
+
+
